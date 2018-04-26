@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>文献管理系统设计方案 | Yaoyinnan's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">文献管理系统设计方案</h1><a id="logo" href="/.">Yaoyinnan's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">文献管理系统设计方案</h1><div class="post-meta">Apr 26, 2018</div><div class="post-content"><h2 id="项目成员"><a href="#项目成员" class="headerlink" title="项目成员"></a>项目成员</h2><p>队长：姚胤楠</p>
+<p>队员：李松谦、张方略、刘方涵</p>
+<h2 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h2><h4 id="平台"><a href="#平台" class="headerlink" title="平台"></a>平台</h4><blockquote>
+<p>PC端</p>
+<blockquote>
+<p>以Web作为平台</p>
+<p>前端基于Vue.js（与移动端小程序配套），页面初步设计仿照 “知乎”</p>
+<p>后端基于ThinkPHP和MySQL</p>
+<p>PHP或JAVA实现推荐算法。    </p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>移动端</p>
+<blockquote>
+<p>初步以小程序作为平台，后期较为成熟后再考虑开发APP。</p>
+</blockquote>
+</blockquote>
+<h2 id="用户兴趣偏向"><a href="#用户兴趣偏向" class="headerlink" title="用户兴趣偏向"></a>用户兴趣偏向</h2><p>通过以下方式获取用户兴趣偏向</p>
+<h4 id="1、我订阅的文献"><a href="#1、我订阅的文献" class="headerlink" title="1、我订阅的文献"></a>1、我订阅的文献</h4><p>（1）RSS订阅</p>
+<p>（2）出版社期刊官网</p>
+<p>（3）Google Scholar订阅</p>
+<p>（4）用户自添加的文章My Favorite Paper</p>
+<h4 id="2-My-Published-Paper（个人发表过的文章）"><a href="#2-My-Published-Paper（个人发表过的文章）" class="headerlink" title="2.My Published Paper（个人发表过的文章）"></a>2.My Published Paper（个人发表过的文章）</h4><p>（1）论文关键词</p>
+<p>（2）共同作者发表的论文</p>
+<p>（3）引用文献</p>
+<blockquote>
+<p>后续改进</p>
+<blockquote>
+<p>后两者可以结合<strong>知识图谱</strong>，计算出学者作者知识图谱，计算学者关键词（标签），计算云图等</p>
+</blockquote>
+</blockquote>
+<h2 id="推荐系统架构"><a href="#推荐系统架构" class="headerlink" title="推荐系统架构"></a>推荐系统架构</h2><p>一个常见的推荐系统架构一般如下图: </p>
+<p><img src="/2018/04/26/文献管理系统设计方案/F:/文献推荐系统\推荐系统框架.png" alt=""></p>
+<p>分为数据来源、推荐引擎和推荐交互三个方面</p>
+<h4 id="数据来源"><a href="#数据来源" class="headerlink" title="数据来源"></a>数据来源</h4><p>涉及到的对象有两个，文献和用户。还有两者的交互。所以数据源有三个方面。</p>
+<ul>
+<li>文献数据:标签（关键词），类别等</li>
+<li>用户数据: 研究领域、研究方向、文献发表、订阅等</li>
+<li>交互数据:对文献的喜好打分（构建评价模型）</li>
+</ul>
+<p>评价模型，通过真实的用户行为数据构建，包括对文献是否浏览，浏览时间，是否收藏，是否分享等等。通过这些指标构建评价模型。(相关性分析＋回归？)</p>
+<h4 id="推荐引擎"><a href="#推荐引擎" class="headerlink" title="推荐引擎"></a>推荐引擎</h4><p>推荐引擎主要是推荐系统的算法，主要包括<strong>基于人口统计学的推荐</strong>，<strong>基于内容的推荐</strong>，<strong>协同过滤</strong>三种。</p>
+<blockquote>
+<p>协同过滤</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>核心是用户交互数据建模 </p>
+</blockquote>
+<blockquote>
+<p>基于协同过滤的推荐可以分为三个子类：</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>基于用户的推荐（User-based Recommendation）</p>
+</blockquote>
+<blockquote>
+<p>基于项目的推荐（Item-based Recommendation）</p>
+</blockquote>
+<blockquote>
+<p>基于模型的推荐（Model-based Recommendation）</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>下文以电影推荐为例介绍推荐引擎：</p>
+<p><img src="/2018/04/26/文献管理系统设计方案/F:/文献推荐系统\推荐引擎的架构.jpg" alt=""></p>
+<p>基于Apache Mahout的协同过滤算法来建立和训练机器学习模型，以及基于Elasticsearch的搜索技术来简化推荐系统的开发。</p>
+<blockquote>
+<p>电影信息数据被重新格式化，然后将其存储在Elasticsearch中用于搜索。</p>
+</blockquote>
+<blockquote>
+<p>来自Apache Mahout的物品相似度算法根据用户对电影的已有评分来创建电影推荐的标识符。这些标识符被添加到存储在Elasticsearch的对应电影文件里。</p>
+</blockquote>
+<blockquote>
+<p>通过用户喜欢电影的标识符去搜索其它电影，将返回一份新的按照用户喜好相关性排序的电影列表。</p>
+</blockquote>
+<p><a href="https://www.csdn.net/article/2015-05-14/2824676" target="_blank" rel="noopener">More</a></p>
+<h5 id="推送流程"><a href="#推送流程" class="headerlink" title="推送流程"></a>推送流程</h5><p><a href="https://www.crosscite.org/docs.html" target="_blank" rel="noopener">DOI</a>的使用</p>
+<p>通过<a href="http://www.elastic.co/products/elasticsearch" target="_blank" rel="noopener">Elasticsearch</a> 构建元搜索–&gt;通过爬虫来获取文章DOI（DOI符合一个正则表达式）–&gt;使用<a href="http://dx.doi.org/" target="_blank" rel="noopener">DOI检索</a>到对应论文–&gt;<strong>*过滤筛选</strong>最适宜的对用户推送</p>
+<h6 id="元搜索：将搜索请求发送至多个搜索引擎，并根据一定的算法对于这些搜索引擎返回的结果进行排序，呈现给用户。"><a href="#元搜索：将搜索请求发送至多个搜索引擎，并根据一定的算法对于这些搜索引擎返回的结果进行排序，呈现给用户。" class="headerlink" title="元搜索：将搜索请求发送至多个搜索引擎，并根据一定的算法对于这些搜索引擎返回的结果进行排序，呈现给用户。"></a>元搜索：将搜索请求发送至多个搜索引擎，并根据一定的算法对于这些搜索引擎返回的结果进行排序，呈现给用户。</h6><h4 id="用户交互"><a href="#用户交互" class="headerlink" title="*用户交互"></a>*用户交互</h4><p><strong>将“推荐”理解为“推送”</strong><br>如果主动推送给用户，很有可能会引起用户反感，虽然在一定程度上会提升用户活跃度。当然这个也可以通过算法去控制要不要主动推送，对于活跃度一直很低的可以主动推荐，甚至是通过发短信来推送，其他用户则可以转为被动。</p>
+<blockquote>
+<p>当下无数的互联网产品都有一个“发现”模块，包括微信，Twiiter等大量产品。用户有需求的时候，会主动的找“推荐”，避免被打搅。而对于推荐系统，也避免对用户形成打扰，引起用户反感。</p>
+</blockquote>
+<p><a href="https://www.zhihu.com/question/28247353/answer/40449736" target="_blank" rel="noopener">More</a></p>
+<h4 id="冷启动问题"><a href="#冷启动问题" class="headerlink" title="*冷启动问题"></a>*<a href="https://www.zhihu.com/question/19843390" target="_blank" rel="noopener">冷启动问题</a></h4><p>用户方面：本身有订阅及初始喜好</p>
+<p>论文方面：本身有特定属性</p>
+<p>两个方面的冷启动问题并不是太过严重</p>
+<h2 id="项目开发流程及相关学习内容"><a href="#项目开发流程及相关学习内容" class="headerlink" title="项目开发流程及相关学习内容"></a>项目开发流程及相关学习内容</h2><h3 id="阶段一：初步实现自动推荐"><a href="#阶段一：初步实现自动推荐" class="headerlink" title="阶段一：初步实现自动推荐"></a>阶段一：初步实现自动推荐</h3><h4 id="1-DOI检索"><a href="#1-DOI检索" class="headerlink" title="1.DOI检索"></a>1.DOI检索</h4><p>实现<strong>仅</strong>通过关键词不做处理地返回相关论文</p>
+<p>关键词–&gt;利用元搜索模式进行搜索请求–&gt;返回论文DOI–&gt;通过DOI检索到对应论文链接</p>
+<p>通过不断改变人工关键词获得不同论文</p>
+<h4 id="2-用户模型（基于人口统计学的推荐）"><a href="#2-用户模型（基于人口统计学的推荐）" class="headerlink" title="2.用户模型（基于人口统计学的推荐）"></a>2.用户模型（基于人口统计学的推荐）</h4><p>构建单一用户模型,存放用户特征关键词</p>
+<p>实现用户不断点击访问请求返回的相关论文,算法自动实现关键词的改变</p>
+<h4 id="3-基于用户的协同过滤推荐"><a href="#3-基于用户的协同过滤推荐" class="headerlink" title="3.基于用户的协同过滤推荐"></a>3.基于用户的协同过滤推荐</h4><p>构建用户系统后台及数据库</p>
+<p>实现多个相似兴趣用户之间的协同过滤推荐</p>
+<h3 id="阶段二：优化推荐结果"><a href="#阶段二：优化推荐结果" class="headerlink" title="阶段二：优化推荐结果"></a>阶段二：优化推荐结果</h3><h4 id="1-筛选搜索结果"><a href="#1-筛选搜索结果" class="headerlink" title="1.筛选搜索结果"></a>1.筛选搜索结果</h4><p>对搜索结果进行筛选和排序，通过权值计算，选出最优论文向用户推荐</p>
+<h4 id="2-增加用户状态初始化"><a href="#2-增加用户状态初始化" class="headerlink" title="2.增加用户状态初始化"></a>2.增加用户状态初始化</h4><p>通过订阅和用户发表文章来初始化用户兴趣模型</p>
+<h4 id="3-自我搜索导致的兴趣改变"><a href="#3-自我搜索导致的兴趣改变" class="headerlink" title="3.自我搜索导致的兴趣改变"></a>3.自我搜索导致的兴趣改变</h4><p>通过用户使用过程中进行的自我搜索和对订阅文章新领域的涉及，不断更新、丰富用户模型</p>
+<p>当用户接触新领域论文时会询问用户是否对相关文章 感兴趣/无感</p>
+<p>或者当用户对新出现的内容不断刷新想获得新内容（表明用户对该内容暂时不感兴趣）</p>
+<h4 id="4-页面设计和显示"><a href="#4-页面设计和显示" class="headerlink" title="4.页面设计和显示"></a>4.页面设计和显示</h4><p>推送的文章不再以链接形式存在</p>
+<p>页面显示文章的<strong>题目、作者、介绍、关键词、Download PDF功能</strong>（免费文章）</p>
+<p>设置免费文章和收费文章分类，对不同情况用户进行相应推荐</p>
+<p><a href="http://www.sci-hub.cn/" target="_blank" rel="noopener">SCI文献</a>可以通过输入DOI获得</p>
+<h3 id="阶段三：拓展优化"><a href="#阶段三：拓展优化" class="headerlink" title="阶段三：拓展优化"></a>阶段三：拓展优化</h3><h4 id="1-计算学者知识图谱"><a href="#1-计算学者知识图谱" class="headerlink" title="*1.计算学者知识图谱"></a>*1.计算学者知识图谱</h4><p>构建图数据库等形式的知识图谱</p>
+<p>通过共同作者，进行用户之间更优化的协同过滤</p>
+<p>*通过文献引用，进行文献之间的关系建立</p>
+<h2 id="存在的疑问"><a href="#存在的疑问" class="headerlink" title="存在的疑问"></a>存在的疑问</h2><ol>
+<li>我们做这个课题时，Web端是否需要注册域名？移动端可否通过注册小程序与PC端连接？小程序是否会有局限性？</li>
+<li>我们是先做好系统然后再研究算法实现功能，还是先学习算法将单一功能实现然后再写系统将二者结合？</li>
+<li>老师在邮件里指出用DOI查询文献，我们这个通过关键字在搜索引擎搜索DOI，再进行DOI搜索返回文献的方法是否得当？</li>
+<li>ElasticSearch这类搜索引擎的概念，我们在网上搜寻很多专业解释难以很快理解，可否用通俗的语言进行解释？</li>
+</ol>
+</div><div class="tags"><a href="/tags/课题-文献/">课题 文献</a></div><div class="post-nav"><a class="next" href="/2018/04/09/MOOC-ThinkPHP基础篇-5-2变量输出、赋值和替换/">MOOC-ThinkPHP基础篇-5-2变量输出、赋值和替换</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/课题-文献/" style="font-size: 15px;">课题 文献</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/04/26/文献管理系统设计方案/">文献管理系统设计方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/09/MOOC-ThinkPHP基础篇-5-2变量输出、赋值和替换/">MOOC-ThinkPHP基础篇-5-2变量输出、赋值和替换</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/09/MOOC-ThinkPHP基础篇-5-1视图view/">MOOC-ThinkPHP基础篇-5-1视图view</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/07/HTML5入门/">HTML5入门</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/23/总结制作NavMenu导航菜单组件时遇到的问题/">总结制作NavMenu导航菜单组件时遇到的问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/17/First-blog/">First blog</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/17/hello-world/">Hello World</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">Yaoyinnan's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
