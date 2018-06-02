@@ -5,9 +5,12 @@
 <p>方案1：通过页码的调整，存储文章列表所有url。（缺点：无法时时获得总页数）</p>
 <p>方案2：通过判断是否有“下一页”的按钮，通过不断点击下一页来获取url。</p>
 <h2 id="新建爬虫项目"><a href="#新建爬虫项目" class="headerlink" title="新建爬虫项目"></a>新建爬虫项目</h2><p>1.新建一个python虚拟环境（article_spider）</p>
+<p>进入虚拟环境，进行下列操作：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>2.安装scrapy（可用豆瓣源）</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> pip install -i https://pypi.douban.com/simple/ scrapy</span><br></pre></td></tr></table></figure>
 <p>3.在项目文件夹中创建爬虫项目（ArticleSpider）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> scrapy startproject ArticleSpider</span><br></pre></td></tr></table></figure>
 <p>4.在项目中创建爬虫模板（可自定义）</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cd ArticleSpider</span><br><span class="line"><span class="meta">$</span> scrapy genspider example example.com</span><br></pre></td></tr></table></figure>
 <p><img src="/2018/05/07/scrapy爬取知名技术文章网站（一）/2.png" alt=""></p>
