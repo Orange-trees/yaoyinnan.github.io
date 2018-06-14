@@ -1,17 +1,17 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>scrapy爬取知名技术文章网站(一) | Yaoyinnan's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">scrapy爬取知名技术文章网站(一)</h1><a id="logo" href="/.">Yaoyinnan's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">scrapy爬取知名技术文章网站(一)</h1><div class="post-meta">May 7, 2018</div><div class="post-content"><h2 id="确认爬取目标"><a href="#确认爬取目标" class="headerlink" title="确认爬取目标"></a>确认爬取目标</h2><p>明确网站（伯乐在线）的结构</p>
 <p>比如说最新文章的url：<a href="http://blog.jobbole.com/all-posts/page/2/" target="_blank" rel="noopener">http://blog.jobbole.com/all-posts/page/2/</a></p>
 <p>每一页的位置和最后的页码有关</p>
-<p><img src="/2018/05/07/scrapy爬取知名技术文章网站(一)/scrapy爬取知名技术文章网站(一" alt="">\1.png)</p>
+<p><img src="/2018/05/07/scrapy爬取知名技术文章网站(一)/scrapy爬取知名技术文章网站(一" alt="">/1.png)</p>
 <p>方案1：通过页码的调整，存储文章列表所有url。（缺点：无法时时获得总页数）</p>
 <p>方案2：通过判断是否有“下一页”的按钮，通过不断点击下一页来获取url。</p>
 <h2 id="新建爬虫项目"><a href="#新建爬虫项目" class="headerlink" title="新建爬虫项目"></a>新建爬虫项目</h2><p>1.新建一个python虚拟环境（article_spider）</p>
 <p>进入虚拟环境，进行下列2、3、4操作：</p>
 <p>2.安装scrapy（可用豆瓣源）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pip install -i https://pypi.douban.com/simple/ scrapy</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> pip install -i https://pypi.douban.com/simple/ scrapy</span><br></pre></td></tr></table></figure>
 <p>3.在项目文件夹中创建爬虫项目（ArticleSpider）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> scrapy startproject ArticleSpider</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> scrapy startproject ArticleSpider</span><br></pre></td></tr></table></figure>
 <p>4.在项目中创建爬虫模板（可自定义）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ArticleSpider</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> scrapy genspider example example.com</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cd ArticleSpider</span><br><span class="line"><span class="meta">$</span> scrapy genspider example example.com</span><br></pre></td></tr></table></figure>
 <p><img src="/2018/05/07/scrapy爬取知名技术文章网站(一)/scrapy爬取知名技术文章网站(一" alt="">\2.png)</p>
 <p>5.导入article_spider虚拟环境</p>
 <p>setting-&gt;interpreter–&gt;Add Local–&gt;虚拟环境</p>
@@ -59,7 +59,7 @@
 <p>通过python每次debug太慢了，可以通过shell命令进行爬取</p>
 <p>先进入虚拟环境下的项目中，再输入：</p>
 <p><img src="/2018/05/07/scrapy爬取知名技术文章网站(一)/scrapy爬取知名技术文章网站(一" alt="">\10.png)</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> scrapy shell url</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> scrapy shell url</span><br></pre></td></tr></table></figure>
 <p><img src="/2018/05/07/scrapy爬取知名技术文章网站(一)/scrapy爬取知名技术文章网站(一" alt="">\11.png)</p>
 <p>在shell中成功的代码要复制回pycharm</p>
 <p>进一步爬取：title、time、favour</p>
