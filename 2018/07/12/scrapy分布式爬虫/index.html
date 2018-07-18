@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>scrapy分布式爬虫 | Yaoyinnan's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">scrapy分布式爬虫</h1><a id="logo" href="/.">Yaoyinnan's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">scrapy分布式爬虫</h1><div class="post-meta">Jul 12, 2018</div><div class="post-content"><h2 id="分布式"><a href="#分布式" class="headerlink" title="分布式"></a>分布式</h2><ol>
+<li>request队列集中管理</li>
+<li>去重集中管理</li>
+</ol>
+<p>采用内存数据库redis对其进行处理。</p>
+<h2 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h2><h4 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h4><p>windows：</p>
+<p><strong>下载地址：</strong><a href="https://github.com/MSOpenTech/redis/releases" target="_blank" rel="noopener">https://github.com/MSOpenTech/redis/releases</a></p>
+<p>不设置环境变量，在cmd中运行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> redis-server.exe redis.windows.conf</span></span><br></pre></td></tr></table></figure>
+<p>设置好环境变量，在cmd中输入：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> redis-server.exe</span></span><br></pre></td></tr></table></figure>
+<p>新开一个cmd，输入：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> redis-cli.exe -h 127.0.0.1 -p 6379</span></span><br></pre></td></tr></table></figure>
+<p>之后即可输入指令。</p>
+<h4 id="redis列表命令"><a href="#redis列表命令" class="headerlink" title="redis列表命令"></a>redis列表命令</h4><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>解释</th>
+<th>全称</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lpush</td>
+<td>左侧插入</td>
+<td>left push</td>
+</tr>
+<tr>
+<td>rpush</td>
+<td>右侧插入</td>
+<td>right push</td>
+</tr>
+<tr>
+<td>blpop</td>
+<td>左侧删除</td>
+<td>block left pop</td>
+</tr>
+<tr>
+<td>brpop</td>
+<td>右侧删除</td>
+<td>block right pop</td>
+</tr>
+<tr>
+<td>lpop</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>lpush：类似于栈，后进先出。从左边进。</p>
+<p>rpush：在右侧插入。</p>
+<p>lpush：从左往右遍历打印列表内容。</p>
+<p>blpop：</p>
+</div><div class="tags"><a href="/tags/spider/">spider</a></div><div class="post-nav"><a class="pre" href="/2018/07/16/Vue爬坑/">Vue爬坑</a><a class="next" href="/2018/07/08/py-sql/">py-sql</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/ThinkPHP/" style="font-size: 15px;">ThinkPHP</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/spider/" style="font-size: 15px;">spider</a> <a href="/tags/vue/" style="font-size: 15px;">vue</a> <a href="/tags/sql/" style="font-size: 15px;">sql</a> <a href="/tags/common/" style="font-size: 15px;">common</a> <a href="/tags/文献推荐/" style="font-size: 15px;">文献推荐</a> <a href="/tags/大一下期末复习/" style="font-size: 15px;">大一下期末复习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/07/18/Git/">Git</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/07/16/Vue爬坑/">Vue爬坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/07/12/scrapy分布式爬虫/">scrapy分布式爬虫</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/07/08/py-sql/">py-sql</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/19/高数下复习/">高数下复习</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/19/高数叔-大物/">高数叔-大物</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/17/常用sql语句/">常用sql语句</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/17/认识SCI、EI、ISTP、SSCI、INSPEC、SCIE、IEEE、CSCD、CSSCI/">认识SCI、EI、ISTP、SSCI、INSPEC、SCIE、IEEE、CSCD、CSSCI</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/13/scrapy进阶开发/">scrapy进阶开发</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/06/scrapy反爬虫策略/">scrapy反爬虫策略</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">Yaoyinnan's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
