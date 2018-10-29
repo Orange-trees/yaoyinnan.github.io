@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title> | Yaoyinnan's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Yaoyinnan's Blog</h1><a id="logo" href="/.">Yaoyinnan's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title"></h1><div class="post-meta">Oct 29, 2018</div><div class="post-content"><blockquote>
+<p>title: Efficient cache resource aggregation using adaptive multi-level exclusive caching policies<br>date: 2018-10-23 12:10:36<br>tags: 缓存替换策略</p>
+</blockquote>
+<blockquote>
+<p>使用自适应的多级独占缓存策略高效的缓存资源聚合</p>
+</blockquote>
+<h4 id="1-存在的问题"><a href="#1-存在的问题" class="headerlink" title="1.存在的问题"></a>1.存在的问题</h4><p>到目前为止部署的多级缓存策略通常在每个级别使用独立的缓存替换算法，这有两个主要的缺点：</p>
+<ol>
+<li>底层缓存中弱化的位置。缓存是基于数据的时间位置原则。只有第一级缓存可以看到原始的访问模式，低层缓存只能在更高级别的缓存中看到遗漏。因此，应用程序的访问请求，如低级缓存所看到的，是由更高级别的缓存过滤的。其结果是传统的单级缓存算法管理。每个缓存级别是独立的，不能有效地管理多级缓存层次结构中的原始位置。</li>
+<li>数据冗余。在级别独立的缓存中，数据可以被多个cache层缓存。这导致了多层缓存层次结构中的聚合缓存资源的实际可用度变得更小，特别是当每个级别都有类似的缓存大小时。存储在低级缓存中的数据块的很大比例将不会被访问。例如，在一个具有第一层DRAM（128 GB）的多级缓存中，第二层是高级pci-e SSD（500 GB），第三层数据SSD（1 TB）。</li>
+<li>访问频率带来的差异。其使得原始的LRU算法位于混合存储系统中不再适用。</li>
+</ol>
+<h4 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2.相关工作"></a>2.相关工作</h4><p>单级缓存替换策略：</p>
+<p>LRU-K[7]、2Q[8]、LRFU[9]、LIRS[10]、ARC[11]、Sopa[14]</p>
+<p>LIRS：使用了基于重用距离的算法，而保存幽灵缓存的成本很高。</p>
+<p>ARC：利用自适应技术，在考虑很少重用距离度量的情况下，用两个动态列表调整频繁访问的区块。</p>
+<p>二级缓存替换策略：</p>
+<p>MultiQueue：合理的遵循了三准则。</p>
+<blockquote>
+<p><strong>Minimal Lifetime:</strong>对于一个给定的负载，缓存中的热数据块应该保持最少minDist时间；</p>
+</blockquote>
+<blockquote>
+<p><strong>Frequency-based priority:</strong>数据块的优先级应该基于它们的访问频率；</p>
+</blockquote>
+<blockquote>
+<p><strong>Temporal frequency:</strong>过去访问频繁但现在很少被访问的数据块应该被替换掉；</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>注:变量minDist是对多种实际环境下的负载进行统计后得出的结论，它描述进入二级缓存的数据块在缓存中应该常驻的最小时间量。</p>
+</blockquote>
+</blockquote>
+<p>多级缓存替换策略：</p>
+<p>基于迁移的缓存替换策略[17]：为了减少网络资源的使用而设计的。</p>
+<blockquote>
+<p>基于迁移的缓存替换策略使用客户端内容跟踪（CCT）表来保存客户端的（高水平缓存）驱逐信息，并定期将信息发送到较低的缓存，并将被逐出的区块重新加载到内存缓存中。这种基于驱逐的策略会导致额外的输入/输出操作，因此可能会增加平均延迟时间。</p>
+</blockquote>
+<p>ULC[18]：统一的、层次感知的缓存替换策略算法。</p>
+<blockquote>
+<p>通过发送检索和降级操作，多层缓存由最高缓存的客户端控制。客户端负责保存所有底层缓存的元数据，但这可能增加客户端的开销，并导致客户实际实现的复杂性。</p>
+</blockquote>
+<p>Karma[19]：一种基于应用程序的多层缓存层次结构的管理策略。</p>
+<blockquote>
+<p>利用应用提示并引入边际增益来实现精确的分配和替换策略。因此，该政策是特定于应用程序的，不适合通用的应用程序场景。</p>
+</blockquote>
+<p>独占缓存替换策略：</p>
+<p>PROMOTE[20]：使用一种概率过滤技术，确定哪个块应当被升级到更高级的缓存。需要记录缓存块时间戳，在缓存级别之间定期发送adaptHint消息。</p>
+<h4 id="3-设计动机"><a href="#3-设计动机" class="headerlink" title="3.设计动机"></a>3.设计动机</h4><p>在算法中使用的显式频率信息通常会导致更高的时间复杂度。</p>
+<p>块的重用距离比最近访问过这一判别方式更有效。</p>
+<h4 id="4-详细介绍算法"><a href="#4-详细介绍算法" class="headerlink" title="4.详细介绍算法"></a>4.详细介绍算法</h4><p>自适应的多级独立缓存策略由两个主要部分组成：</p>
+<ol>
+<li>基于重用距离的自适应替换缓存算法（ReDARC）。</li>
+<li>自适应的单向概率推送算法（ALACA）。</li>
+</ol>
+<h5 id="ReDARC"><a href="#ReDARC" class="headerlink" title="ReDARC"></a>ReDARC</h5><p>ReDARC根据块重用距离位置测量动态地将块划分为两组：小重用距离（SRD）和大重用距离（LRD）。</p>
+<h5 id="ALACA"><a href="#ALACA" class="headerlink" title="ALACA"></a>ALACA</h5><p>ALACA使用单向推送操作，只允许较低的缓存将块推送到更高的缓存，并实现多级独占缓存属性。ALACA可以根据在线缓存状态动态调整不同缓存级别中的块的位置。</p>
+<blockquote>
+<p>重用距离：</p>
+<blockquote>
+<p>最近的重用距离是在给定区块的最后一个和倒数第二个（倒数第二个）引用之间访问的其他不同块的数量</p>
+<p>例如，有一系列被访问的块[a，b，c，d，b，a]，块 b最近的重用距离是2，block b的近距离是1</p>
+</blockquote>
+</blockquote>
+<p>ReDARC的数据结构组成：</p>
+<ol>
+<li>类似于LRU-like的堆栈<strong>S</strong></li>
+<li>一个驱逐列表<strong>EL</strong></li>
+<li>一个列表<strong>Q</strong></li>
+</ol>
+<p>EL有两种类型的区块：LRD常驻块和LRD非常驻块。Q中只保留LRD的常驻块。ReDARC维护一个虚拟缓存，它的大小等于实际缓存大小。虚拟缓存中的虚拟块只在内存中缓存了它们的元数据。S和EL都保存有虚拟块，它们是LRD非常驻块。S和EL的总数等于实际缓存大小的两倍。</p>
+<p><img src="/2018/10/29/使用自适应的多级独占缓存策略高效的缓存资源聚合/※※※※※使用自适应的多级独占缓存策略高效的缓存资源聚合/1538551227770.png" alt="1538551227770"></p>
+<blockquote>
+<p>(L, R)：LRD常驻块、(L, N)：LRD非常驻块、(S, R)：SRD常驻块</p>
+</blockquote>
+<p><strong>具体算法过程在paper中通过伪代码和讲解的方式给出，这里不做搬运。</strong></p>
+<h4 id="5-实验评估性能"><a href="#5-实验评估性能" class="headerlink" title="5.实验评估性能"></a>5.实验评估性能</h4><ol>
+<li><p>提出了一个单一的客户端多层缓存模型用于测试。</p>
+</li>
+<li><p>在多种模拟环境下搜集测试数据。</p>
+<blockquote>
+<p>Zipf：类似于web应用程序中常见的访问模式，即经常访问几个街区，而其他的访问模式则要少得多。</p>
+<p>Glimpse：用于搜索文本字符串的索引和查询系统。</p>
+<p>TPC-R和TPC-H：对数据库文件进行随机存取。访问一些大型数据文件，其中一些文件具有多个并发访问模式。</p>
+<p>Multi1：代码开发环境中的工作负载。</p>
+<p>Financial1：大型金融机构的OLTP应用程序。</p>
+<p>Websearch1：搜索引擎场景。</p>
+</blockquote>
+</li>
+<li><p>比较其他的缓存替换策略（同时介绍了这些缓存替换策略的特性）</p>
+<p>四个单级缓存替换策略：LRU、ARC、LIRS、ReDARC</p>
+<p>六个多级缓存替换策略：</p>
+<ol>
+<li>三个多级独占缓存替换策略：Global LRU、Promote LRU 和 <strong>REAL</strong>（(该paper)</li>
+<li>三个多级非独占缓存替换策略：Independent LRU、Independent ARC 和 LRU-MQ</li>
+</ol>
+</li>
+<li><p>图表对比：</p>
+<ol>
+<li><p>单级缓存：单通过ReDARC实现的单级缓存，展现出比当前最优算法更好的效果。</p>
+</li>
+<li><p>多级缓存：</p>
+<ol>
+<li><p>引入三个性能指标：</p>
+<blockquote>
+<p>aggregate hit ratio(聚合命中率)</p>
+<p>inter cache traffic(内部缓存流量)</p>
+<p>average response time(平均响应时间)&lt;<strong>关键</strong>&gt;</p>
+</blockquote>
+</li>
+<li><p>在平均响应时间方面REAL更优。REAL利用了独占缓存的优势，使得内部缓存流量使用更少。</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h4 id="6-总结工作"><a href="#6-总结工作" class="headerlink" title="6.总结工作"></a>6.总结工作</h4><p>缓存层次结构的性能可以通过新的存储介质进一步改进，比如SSD（固态驱动器）和PCM（相变内存）等等。作者相信REAL可以将这些存储介质作为额外的缓存级别进行管理。</p>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2018/10/29/大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略/"></a><a class="next" href="/2018/10/29/提炼交换_一个高效的混合DRAM-NVM系统的交换机制/"></a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/BT/" style="font-size: 15px;">BT</a> <a href="/tags/ThinkPHP/" style="font-size: 15px;">ThinkPHP</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/vue/" style="font-size: 15px;">vue</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/spider/" style="font-size: 15px;">spider</a> <a href="/tags/sql/" style="font-size: 15px;">sql</a> <a href="/tags/hbase/" style="font-size: 15px;">hbase</a> <a href="/tags/文献推荐/" style="font-size: 15px;">文献推荐</a> <a href="/tags/common/" style="font-size: 15px;">common</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/基于雾计算的混合内存下的共享末级缓存成本感知缓存替换策略/">基于雾计算的混合内存下的共享末级缓存成本感知缓存替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/混合存储系统中基于遗漏感知的LRU缓存替换策略/">混合存储系统中基于遗漏感知的LRU缓存替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略/">大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/使用自适应的多级独占缓存策略高效的缓存资源聚合/">使用自适应的多级独占缓存策略高效的缓存资源聚合</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/提炼交换_一个高效的混合DRAM-NVM系统的交换机制/">提炼交换_一个高效的混合DRAM-NVM系统的交换机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/05/ThinkPhp埋坑指南/">ThinkPhp埋坑指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/04/linux登录后出现-bash-4-1-，解决办法以及造成这样的原因/">linux登录后出现-bash-4.1$，解决办法以及造成这样的原因</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/08/17/py-Hbase/">py-Hbase</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/08/15/BT/">BT</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/07/18/Git/">Git</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">Yaoyinnan's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

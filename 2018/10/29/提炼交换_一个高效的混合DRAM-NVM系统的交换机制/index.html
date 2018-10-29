@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title> | Yaoyinnan's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Yaoyinnan's Blog</h1><a id="logo" href="/.">Yaoyinnan's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title"></h1><div class="post-meta">Oct 29, 2018</div><div class="post-content"><blockquote>
+<p>title: Refinery swap_An efficient swap mechanism for hybrid DRAM–NVM systems<br>date: 2018-10-28 21:25:28<br>tags: 缓存替换策略</p>
+</blockquote>
+<blockquote>
+<p>提炼交换:  一个高效的混合DRAM-NVM系统的交换机制</p>
+</blockquote>
+<h3 id="0-前言"><a href="#0-前言" class="headerlink" title="0.前言"></a>0.前言</h3><p>现有的大多数交换机制的性能有限，因为缺乏内存访问的认知，完全避免NVM的写操作。</p>
+<p>本文通过写计数不一致的特性，允许少量写操作，来减少互换操作带来的巨大开销。</p>
+<h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1.简介"></a>1.简介</h3><p>NVM可直接连接到内存总线，与DRAM共享地址空间。凭借着接近DRAM的速度和字节可寻址性，逐渐取代FLASH设备作为交换区域的候选。</p>
+<p>数据可以在DRAM和NVM之间移动，使用快速内存复制操作，而不是缓慢的I/O。</p>
+<p>架构：</p>
+<ol>
+<li><p>提出<strong>NPS</strong>(NVM Page Screening)算法，筛选出应该从NVM中被交换到DRAM中的页面。</p>
+</li>
+<li><p>提出<strong>DPE</strong>(DRAN Page Extraction)算法，来提取将冷数据从DRAM中被交换到NVM中的页面。</p>
+</li>
+<li><p>提出<strong>MLA</strong>(交换感知均衡策略——多级分配)，以进一步延长NVM的生存期。</p>
+</li>
+</ol>
+<h3 id="2-背景"><a href="#2-背景" class="headerlink" title="2.背景"></a>2.背景</h3><h4 id="混合存储架构"><a href="#混合存储架构" class="headerlink" title="混合存储架构"></a>混合存储架构</h4><p>架构维护一个虚拟页面，来映射到DRAM/NVM的物理页面。系统从NVM中分配一个空闲的物理页面，将页面中的数据从DRAM复制到NVM物理页面。最后，用NVM物理页面地址修改页表对应的条目。收回DRAM页面。</p>
+<h4 id="根据相关工作总结出优化点"><a href="#根据相关工作总结出优化点" class="headerlink" title="根据相关工作总结出优化点"></a>根据相关工作总结出优化点</h4><ol>
+<li>通过对应用程序页面的写计数分布的分析，我们发现了应用程序写计数差异的性质，即应用程序的大多数页面很少写，大多数写集中在少数页面上。</li>
+<li>我们首先提出，直接在NVM上写入数据比不断地将数据交换到DRAM更有好处。</li>
+<li>基于写计数视差的性质，设计了一种新的NVM交换机制和读写均衡策略。</li>
+</ol>
+<h3 id="3-提出交换策略"><a href="#3-提出交换策略" class="headerlink" title="3.提出交换策略"></a>3.提出交换策略</h3><h4 id="3-1-设计动机"><a href="#3-1-设计动机" class="headerlink" title="3.1 设计动机"></a>3.1 设计动机</h4><h5 id="交换操作的高开销"><a href="#交换操作的高开销" class="headerlink" title="交换操作的高开销"></a>交换操作的高开销</h5><p>交换操作在延迟和能耗两方面都比直接写NVM的操作要劣势得多。</p>
+<h5 id="写计数不一致"><a href="#写计数不一致" class="headerlink" title="写计数不一致"></a>写计数不一致</h5><p>基准测试MiBench and MediaBench</p>
+<p>页面的写计数在所有页面中分布不均，考虑到只读页面，这种现象将会更糟糕。因而以相同的方式对待所有页面时不公平的。</p>
+<p><strong>Refinery Swap</strong>的目的是通过提取应用程序的数据访问特性来减少交换操作和NVM写操作的数量。</p>
+<h4 id="3-2-标识交换页面"><a href="#3-2-标识交换页面" class="headerlink" title="3.2 标识交换页面"></a>3.2 标识交换页面</h4><p>系统中页面可以根据页面的读/写频率分为以下四种类型：</p>
+<ol>
+<li>只读页面：通常存储只读文件数据、代码部分和进程的静态数据。可在创建新进程或缓存文件数据时识别。</li>
+<li>Rarely-written页面：很少更新。可在系统调用中标识，也可以由程序员标识。</li>
+<li>Frequently-written页面：经常更新，大多数易变的内核数据结构、进程的堆和栈，以及映射为可写的文件数据。</li>
+<li>其他页面：没有明显的读写偏差。</li>
+</ol>
+<p>本文的交换机制中，只读页面始终保持在NVM中。其他三种根据访问运行时状态动态交换。</p>
+<h4 id="3-3-NVM页面筛选交换入操作（NPS-NVM-Page-Screening）"><a href="#3-3-NVM页面筛选交换入操作（NPS-NVM-Page-Screening）" class="headerlink" title="3.3 NVM页面筛选交换入操作（NPS: NVM Page Screening）"></a>3.3 NVM页面筛选交换入操作（NPS: NVM Page Screening）</h4><p><strong>NPS</strong>允许对NVM进行小的写操作，以减少交换操作的数量，同时也允许对NVM进行大的写操作。</p>
+<p>假设将一个页面从NVM迁移到DRAM的成本是CNtoD，它是三个子操作成本的总和。一次在NVM中编写整个页面(4KB)的成本记为CWN。因此，为了通过直接在NVM中编写页面来获得好处，需要满足写T次页面的累计成本：<br>$$<br>T ∗ C_{WN} ≤ C_{NtoD}<br>$$<br>累计成本不应该超过迁移成本：<br>$$<br>C_{NtoD} ≤ (T + 1) ∗ C_{WN}<br>$$<br>接下来，我们分析了T对提出的NPS算法的影响。假设一个页面最初位于NVM上，那么编写页面的成本可以计算如下:<br>$$<br>C_{Total}=\left{<br>\begin{aligned}<br>&amp; C_{WN}<em>i ,&amp; if i ≤ T \<br>&amp; C_{WN}</em>T + C_{NtoD} + C_{WD} <em> (i-T） ,&amp;if i &gt; T\<br>\end{aligned}<br>\right.<br>$$<br>其中i是页面在其生命周期中被写入的页数，如果$$i ≤ T$$，应保留在NVM，如果$$i &gt; T$$，则应该迁移到DRAM。因此，最优解的成本为：<br>$$<br>Optimal_C_{Total}=\left{<br>\begin{aligned}<br>&amp; C_{WN}</em>i ,&amp; if i ≤ T \<br>&amp; C_{NtoD} + C_{WD} * i ,&amp;if i &gt; T\<br>\end{aligned}<br>\right.<br>$$</p>
+<p>根据方程组，当$i≤T$时可得最优解。当$i&gt;T$时，可得$R_{ao}$为：<br>$$<br>Rao =\frac{C_{WN} ∗ T + C_{NtoD} + C_{WD} ∗ (i − T)}{C_{NtoD} + C_{WD} ∗ i}<br>= 1 +\frac{C_{WN} − C_{WD}}{C_{NtoD} + C_{WD} ∗ i}∗T<br>$$<br>因此，$R_{ao}$是关于i的单调递减函数，从整数$i &gt; T$开始，式(3)中i的最小值为T +1。因此，最坏的情况是在NVM的T + 1的生命周期中写一个页面。最坏情况的成本是$C_{WN} * T + C_{NtoD} + C_{WD}$。因此：<br>$$<br>ε =\frac{C_{WN} − C_{WD}}{C_{NtoD} + C_{WD} ∗ (T + 1)}∗ T<br>$$</p>
+<h4 id="3-4-DRAM页面提取用于交换操作-（DPE-DRAM-Page-Extraction）"><a href="#3-4-DRAM页面提取用于交换操作-（DPE-DRAM-Page-Extraction）" class="headerlink" title="3.4 DRAM页面提取用于交换操作 （DPE:  DRAM Page Extraction）"></a>3.4 DRAM页面提取用于交换操作 （DPE:  DRAM Page Extraction）</h4><p>提出DRAM页面提取(<strong>DPE</strong>)，用于为交换操作选择受影响的页面。</p>
+<p>通过由访问信息构成的有限状态机决定的页面优先级对页面进行调整。如图：</p>
+<p><img src="/2018/10/29/提炼交换_一个高效的混合DRAM-NVM系统的交换机制/※※※※※※提炼交换_混合DRAMNVM系统的有效交换机制/1540781833364.png" alt="1540781833364"></p>
+<p>通过两个维度：页面的写入频率和访问时效性。</p>
+<p>每个期间页面的运行时信息由两个标志表示：</p>
+<ol>
+<li>写入标志(D)：如果页面是在当期写入，则将标志D设置为1;否则,D = 0。</li>
+<li>访问标志(A)：如果当前期间访问(读或写)页面，则A=1;否则,A= 0。</li>
+</ol>
+<p>该标志由硬件分页单元设置为1，而分页单元不会置其为0。需要在每个期间结束时重置为0。</p>
+<p>DPE机制总是从状态0、状态1等页面中选择页面进行交换，直到获得足够的freeDRAMPages为止。</p>
+<p>新置入的页面被分配为状态8，因为其被再次访问的可能性最高。</p>
+<h4 id="3-5-NVM的耗损平衡（MLA-Multi-Level-Allocation）"><a href="#3-5-NVM的耗损平衡（MLA-Multi-Level-Allocation）" class="headerlink" title="3.5 NVM的耗损平衡（MLA: Multi-Level Allocation）"></a>3.5 NVM的耗损平衡（MLA: Multi-Level Allocation）</h4><p>磨损均衡中最重要的基础之一是每一页框架的磨损状态，即每一页帧的写入次数。NVM上有两种写操作:由交换操作引起的写操作和直接写NVM。</p>
+<p>通过硬件跟踪少量的直接写操作并收集系统的所有写操作。硬件只需要记录每次分配页帧时的写操作，而不需要记录历史记录中的写操作总数。在执行交换操作时，系统会顺便记录对页帧的写入总数。</p>
+<p>从设计上看，对页面的直接写操作是由硬件记录的，不会中断进程，硬件成本低。</p>
+<p>MLA的主要思想是主动地首先为新请求分配最少的空闲页帧。MLA算法为每个NVM页帧保留一个写计数器。页帧的写入计数器记录相应页帧被写入的总次数。只有当页面框架返回到空闲列表时，写计数器才会被调整，或者通过swap-in操作回收，或者通过进程释放。当页框空闲时，写入计数器会记录在空闲页框本身中。当使用页框时，我们维护写计数器是由页的临时结构。当重新生成页帧时，写计数器将被更新到页帧本身。维护每个新释放的NVM页面框架的成本是对于MLA来说可以忽略不计，只需比较几个计数器并修改几个指针。</p>
+<p>将NVM页帧的写计数器的值划分为L域。域的范围是指数级增加，以充分区分和利用很少写的页帧。定义域i的范围定义为$[10^{i}, 10^{i}+1], i = 1,…, L$，除了定义域1从0开始，定义域L的上限是NVM编程周期的最大值。</p>
+<p>如图4所示，MLA维护L个队列(即$Q_{1}$到$Q_{L}$)，一对一地对应于L域。每个空闲页帧都被放置在与它的写计数器的值相对应的队列中。例如，$Q_{i}$中页帧的写计数器的值在$[10^{i},10^{i}+1]$之间。每当系统需要一个新的NVM页帧时，MLA算法首先从最低级别队列中分配一个空闲页帧。如果失败，MLA将尝试从更高级别的队列中分配一个空闲的页帧，依此类推。如果系统运行了很长一段时间，低级队列中没有空闲的页帧，队列的范围可以由守护进程重新调整为细粒度的写计数器分类。MLA可以保护正在使用的页面不被快速繁重的写操作磨损，即MLA只在分配和重新分配页面时进行调整。这是因为NVM上的每个正在使用的页面在写入超过T次之后都会触发一个swap-in操作。在交换之后，在DRAM页面框架上执行随后的重写。</p>
+<p><img src="/2018/10/29/提炼交换_一个高效的混合DRAM-NVM系统的交换机制/※※※※※※提炼交换_混合DRAMNVM系统的有效交换机制/1540810440493.png" alt="1540810440493"></p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4.实验"></a>4.实验</h3><p>将Refinery Swap(由Refinery表示)与三种Swap方法进行比较，分别是Linux Swap、DR.Swap和M-CLOCK的Swap机制。Linux交换被用作基准。DR.Swap和M-CLOCK是混合DRAM NVM系统中的典型交换机制。</p>
+<h4 id="4-1-实验装置"><a href="#4-1-实验装置" class="headerlink" title="4.1 实验装置"></a>4.1 实验装置</h4><p>模拟器描述了针对不同交换机制的DRAM和NVM混合内存体系结构。交换机制被合并到模拟器中。在实验中，我们使用追踪驱动的模拟来比较交换机制。</p>
+<p>模拟器上运行的工作负载是从MiBench[20]和MediaBench[21]的12个基准测试中生成的跟踪，包括basicmath、dijkstra、epic、FFT、gsm、ispell、jpeg、mpeg、patricia、SHA、stringsearch和typeset。跟踪是由Valgrind 3.11.0[25]的Cachegrind工具提取的。</p>
+<blockquote>
+<p>[20] M.R. Guthaus, J.S. Ringenberg, D. Ernst, T.M. Austin, T. Mudge, R.B. Brown,<br>Mibench: A free commercially representative embedded benchmark suite, in:<br>Proceedings of IEEE IWWC, 2001, pp. 3–14.<br>[21] C. Lee, M. Potkonjak, W.H. Mangionesmith, Mediabench: a tool for evaluating<br>and synthesizing multimedia and communications systems, Micro 50 (2)<br>(1997) 330–335.</p>
+</blockquote>
+<h4 id="4-2-NPS的阈值设置"><a href="#4-2-NPS的阈值设置" class="headerlink" title="4.2 NPS的阈值设置"></a>4.2 NPS的阈值设置</h4><p>阈值的设定不一定是越高越好。</p>
+<p>交换操作的数量与直接NVM写操作的数量之间的关系决定了NVM写的总数，因为通过交换操作在NVM上写的大小是应用程序直接写的大小的1024倍。因此，工作负载的数据访问特性，如写差异的特性，会导致工作负载的不同优化配置。</p>
+<h4 id="4-3-精炼置换与现有方法对比"><a href="#4-3-精炼置换与现有方法对比" class="headerlink" title="4.3 精炼置换与现有方法对比"></a>4.3 精炼置换与现有方法对比</h4><h5 id="4-3-1-基本操作"><a href="#4-3-1-基本操作" class="headerlink" title="4.3.1 基本操作"></a>4.3.1 基本操作</h5><p>相对比其他方法，该方法减少了95%及以上的<strong>交换操作</strong>。因此，为了减少NVM写操作的总数，允许对NVM进行小的写操作是非常重要和值得的。</p>
+<h5 id="4-3-2-影响使用期"><a href="#4-3-2-影响使用期" class="headerlink" title="4.3.2 影响使用期"></a>4.3.2 影响使用期</h5><p>采用平均分配NVM写的方式，以达到磨损均衡。</p>
+<h5 id="4-3-3-对系统性能的影响"><a href="#4-3-3-对系统性能的影响" class="headerlink" title="4.3.3 对系统性能的影响"></a>4.3.3 对系统性能的影响</h5><p>DRAM的延时由DRAMSim[32]通过使用微米的DRAM[33]的参数得到。</p>
+<p>NVM模拟器NVSim[34]是CACTI[35]工具的一种NVM支持的变体，它被用于估计给定NVM内存大小的读/写延迟。</p>
+<blockquote>
+<p>[32] D. Wang, B. Ganesh, N. Tuaycharoen, K. Baynes, A. Jaleel, B. Jacob, Dramsim: a<br>memory system simulator, ACM SIGARCH Comput. Archit. News 33 (4) (2005)<br>100–107.<br>[33] Micron inc., 1gb ddr3 sdram component: Mt41j256m4 (2013).<br>[34] X. Dong, C. Xu, Y. Xie, N.P. Jouppi, Nvsim: A circuit-level performance, energy,<br>and area model for emerging nonvolatile memory, IEEE Trans. Comput.-Aided<br>Des. Integr. Circuits Syst. 31 (7) (2012) 994–1007.<br>[35] B.N. Muralimanohar, R. Balasubramonian, N.P. Jouppi, Cacti 6.0: A tool to<br>model large caches, HP Laboratories, Technical Report HPL-2009-85.</p>
+</blockquote>
+<p>STT-RAM的参数由[36]得到。采用4nm PCM技术[24]模拟PCM。</p>
+<blockquote>
+<p>[36] E. Kltrsay, M. Kandemir, A. Sivasubramaniam, O. Mutlu, Evaluating stt-ram as<br>an energy-efficient main memory alternative, in: Proceeding of IEEE International<br>Symposium on Performance Analysis of Systems and Software, ISPASS,<br>2013, pp. 256–267.</p>
+<p>[24] K. Zhong, D. Liu, L. Liang, X. Zhu, L. Long, Y. Wang, E. Sha, Energy-efficient<br>in-memory paging for smartphones, IEEE Trans. Comput.-Aided Des. Integr.<br>Circuits Syst. 35 (10) (2016) 1577–1590.</p>
+</blockquote>
+<h5 id="4-3-4-对能源消耗的影响"><a href="#4-3-4-对能源消耗的影响" class="headerlink" title="4.3.4 对能源消耗的影响"></a>4.3.4 对能源消耗的影响</h5><p>该方案较其他方法节省了75%的能耗。</p>
+<p>使用[24]中提出的模型计算总能耗Etotal:</p>
+<blockquote>
+<p>[24] K. Zhong, D. Liu, L. Liang, X. Zhu, L. Long, Y. Wang, E. Sha, Energy-efficient<br>in-memory paging for smartphones, IEEE Trans. Comput.-Aided Des. Integr.<br>Circuits Syst. 35 (10) (2016) 1577–1590.</p>
+</blockquote>
+<h4 id="4-4-DPE策略的效果"><a href="#4-4-DPE策略的效果" class="headerlink" title="4.4 DPE策略的效果"></a>4.4 DPE策略的效果</h4><p>与LRU和WA-LRU比较，平均减少了40%的交换操作。</p>
+<p>DRAM容量越大，体现的效果越来越好，因为发生交换操作的可能越少。而当DRAM容量减少时，LRU由于工作负载的特性，性能得到很大提升。</p>
+<h4 id="4-5-磨损均衡策略的影响"><a href="#4-5-磨损均衡策略的影响" class="headerlink" title="4.5 磨损均衡策略的影响"></a>4.5 磨损均衡策略的影响</h4><p>提出的MLA策略能够通过在运行时主动分配最少的空闲页帧来平衡NVM页帧的磨损。</p>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2018/10/29/使用自适应的多级独占缓存策略高效的缓存资源聚合/"></a><a class="next" href="/2018/10/05/ThinkPhp埋坑指南/">ThinkPhp埋坑指南</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/BT/" style="font-size: 15px;">BT</a> <a href="/tags/ThinkPHP/" style="font-size: 15px;">ThinkPHP</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/vue/" style="font-size: 15px;">vue</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/spider/" style="font-size: 15px;">spider</a> <a href="/tags/sql/" style="font-size: 15px;">sql</a> <a href="/tags/hbase/" style="font-size: 15px;">hbase</a> <a href="/tags/文献推荐/" style="font-size: 15px;">文献推荐</a> <a href="/tags/common/" style="font-size: 15px;">common</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/基于雾计算的混合内存下的共享末级缓存成本感知缓存替换策略/">基于雾计算的混合内存下的共享末级缓存成本感知缓存替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/混合存储系统中基于遗漏感知的LRU缓存替换策略/">混合存储系统中基于遗漏感知的LRU缓存替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略/">大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/使用自适应的多级独占缓存策略高效的缓存资源聚合/">使用自适应的多级独占缓存策略高效的缓存资源聚合</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/提炼交换_一个高效的混合DRAM-NVM系统的交换机制/">提炼交换_一个高效的混合DRAM-NVM系统的交换机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/05/ThinkPhp埋坑指南/">ThinkPhp埋坑指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/04/linux登录后出现-bash-4-1-，解决办法以及造成这样的原因/">linux登录后出现-bash-4.1$，解决办法以及造成这样的原因</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/08/17/py-Hbase/">py-Hbase</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/08/15/BT/">BT</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/07/18/Git/">Git</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">Yaoyinnan's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title> | Yaoyinnan's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Yaoyinnan's Blog</h1><a id="logo" href="/.">Yaoyinnan's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title"></h1><div class="post-meta">Oct 29, 2018</div><div class="post-content"><blockquote>
+<p>title: Dynamic Adaptive Replacement Policy in Shared Last-Level Cache of DRAM/PCM Hybrid Memory for Big Data Storage<br>date: 2018-10-11 22:04:10<br>tags: 缓存替换策略</p>
+</blockquote>
+<blockquote>
+<p>大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略</p>
+</blockquote>
+<h4 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h4><p>本文使用非易失性存储器（NVM）中的具体一种”相变存储器（PCM）“来实现混合存储系统的缓存替换策略。</p>
+<p>PCM使用LRU，DRAM使用根据进程行为的替换策略。</p>
+<h4 id="Ⅰ-简介"><a href="#Ⅰ-简介" class="headerlink" title="Ⅰ.简介"></a>Ⅰ.简介</h4><p>DRAM缺点：如高功率消耗和低密度。</p>
+<p>PCM缺点：高访问延迟和有限写寿命。</p>
+<p>适用PCM替代DRAM不现实，继而出现混合存储方式，PCM+DRAM。</p>
+<p>最后一级缓存遗漏比减少可以等于主存访问数减少，但是它不能表示混合主内存开销的减少。</p>
+<p><strong>通过PCM长延时访问，可以增加混合主存储器存取开销。</strong></p>
+<p>提出<strong>动态自适应替代策略（DARP）</strong></p>
+<ol>
+<li>最后一级缓存中的数据被划分为PCM数据和DRAM数据，因为不同的数据使用不同的替换策略。</li>
+<li>建立了间接模型。此外，主存由两种媒介组成，不同的媒介具有不同的间接访问权。在确定每个数据最方便的替换策略时，<strong>开销模型</strong>是至关重要的。</li>
+<li>采用基于阶段的进程剖面，使用进程内存访问行为。</li>
+<li>最后，使用了<strong>开销模型和进程行为的组合</strong>，用于动态确定每个数据的替换策略。</li>
+</ol>
+<h4 id="Ⅱ-LRU在DRAM-PCM混合主存储器中的挑战"><a href="#Ⅱ-LRU在DRAM-PCM混合主存储器中的挑战" class="headerlink" title="Ⅱ.LRU在DRAM/PCM混合主存储器中的挑战"></a>Ⅱ.LRU在DRAM/PCM混合主存储器中的挑战</h4><h5 id="对不同内存介质访问的不对称性"><a href="#对不同内存介质访问的不对称性" class="headerlink" title="对不同内存介质访问的不对称性"></a>对不同内存介质访问的不对称性</h5><p>PCM的写延迟比DRAM高6-10倍。</p>
+<h5 id="内存访问数依赖于混合内存配置"><a href="#内存访问数依赖于混合内存配置" class="headerlink" title="内存访问数依赖于混合内存配置"></a>内存访问数依赖于混合内存配置</h5><p>随着PCM/DRAM的增大，对PCM的访问量增加。</p>
+<p><img src="/2018/10/29/大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略/※※※※大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略/1539752685015.png" alt="1539752685015"></p>
+<h5 id="缓存容量比分析"><a href="#缓存容量比分析" class="headerlink" title="缓存容量比分析"></a>缓存容量比分析</h5><p>PCM的内存访问数比PCM的容量比率增长更快。</p>
+<p>我们的目标是增加末级缓存PCM数据容量，以减少PCM内存访问数，并提高性能。</p>
+<h5 id="对混合内存配置的性能依赖"><a href="#对混合内存配置的性能依赖" class="headerlink" title="对混合内存配置的性能依赖"></a>对混合内存配置的性能依赖</h5><p>PCM访问数增加 –&gt; 性能下降</p>
+<h5 id="过程内存访问行为的动态变化"><a href="#过程内存访问行为的动态变化" class="headerlink" title="过程内存访问行为的动态变化"></a>过程内存访问行为的动态变化</h5><p>gcc基准的实时IPC值显示在图4中。IPC值每500万次被采样。实时IPC值的动态变化可以反映过程内存访问行为的动态变化。</p>
+<p><img src="/2018/10/29/大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略/※※※※大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略/1539754001495.png" alt="1539754001495"></p>
+<p>以此为基础，提出了基于动态过程行为的动态自适应替代策略（DARP）。</p>
+<h4 id="Ⅲ-动态适应替换政策-DARP"><a href="#Ⅲ-动态适应替换政策-DARP" class="headerlink" title="Ⅲ.动态适应替换政策(DARP)"></a>Ⅲ.动态适应替换政策(DARP)</h4><h5 id="DARP概述-简介中有提出"><a href="#DARP概述-简介中有提出" class="headerlink" title="DARP概述(简介中有提出)"></a>DARP概述(简介中有提出)</h5><p>DARP由四个部分组成:</p>
+<ol>
+<li>数据分区，由于DRAM/PCM混合主存有两种内存介质，所有数据被分为PCM数据和DRAM数据;</li>
+<li>为了证明不同内存介质的访问成本，提出了一种开销模型。</li>
+<li>基于动态进程内存访问行为的进程分析。</li>
+<li>结合开销模型和每个进程阶段的内存访问行为，以确定所有阶段的替换策略。每个阶段都有相应的替换策略;因此，我们的替代策略是动态适应的。</li>
+</ol>
+<h5 id="数据分割机制"><a href="#数据分割机制" class="headerlink" title="数据分割机制"></a>数据分割机制</h5><p>提出一种<strong>数据分割算法</strong>，该算法需要<strong>两个先决条件</strong>，并且这也是混合存储系统的条件：</p>
+<ol>
+<li>所有的PCM和DRAM存储器都是连续的。</li>
+<li>DRAM位于低地址，PCM位于高地址。</li>
+</ol>
+<p>T: the candidate cache line tag（候选缓存栈标记）</p>
+<p>MD: the DRAM memory capacity（DRAM存储容量）</p>
+<p>S: the whole cache sets（全部缓存集）</p>
+<p>CL: the cache line size（缓存栈大小）</p>
+<p>$$DV = MD/(S ∗ CL)$$</p>
+<p>通过$temp= T/DV=T/(M_{D}/(S<em>CL))<br>=(T</em>S*CL)/M_{D}$ 判断数据是DRAM缓存栈还是PCM缓存栈。</p>
+<h5 id="开销模型"><a href="#开销模型" class="headerlink" title="开销模型"></a>开销模型</h5><p>内存访问成本的不对称性是一大难题。</p>
+<p>DRAM和PCM的读写命中/遗漏比率在每个过程中都不同，以往的再最终衡量的方式是无价值的，现提出以过程为阶段，在每个阶段开始之前计算一次之前的开销，以用来协助替换策略。</p>
+<p>开销模型：$$C = H_{pre} ∗ C_{c} + M_{PRpre} ∗ C_{PR} + M_{PWpre} ∗ C_{PW}+M_{DRpre} ∗ C_{DR} + M_{DW pre} ∗ C_{DW}$$</p>
+<p>$$H_{pre}, M_{PRpre}, M_{PWpre}, M_{DRpre}, M_{DWpre}$$分别表示在前一个进程阶段的最后一级缓存中的最后一级缓存命中率，PCM读遗漏率，PCM写遗漏率，DRAM读丢率和DRAM写遗漏率，C表示开销。</p>
+<h5 id="基于进程阶段的过程分析"><a href="#基于进程阶段的过程分析" class="headerlink" title="基于进程阶段的过程分析"></a>基于进程阶段的过程分析</h5><p>性能监视器单元(PMU)可以来检测末级缓存命中率，并且其在当前每个CPU中都存在，开销可不记。</p>
+<p>然而，PMU只能记录在统一总主存的遗漏率，需要通过数据分割算法去判断是属于DRAM还是PAM。</p>
+<h5 id="动态自适应替换策略算法"><a href="#动态自适应替换策略算法" class="headerlink" title="动态自适应替换策略算法"></a>动态自适应替换策略算法</h5><p>缓存替换策略被分为两部分：插入策略 + 提升策略</p>
+<p>插入策略决定当缓存遗漏时新数据被插入缓存集的位置。提升策略决定当缓存命中时被提升的位置。</p>
+<p>DARP提出所有的PCM数据应当被插入在MRU中以减少丢失率，而DRAM数据应当依据动态开销模型确定其位置。</p>
+<p>位置因子，表示插入/提升位置P F，定义为:$$PF = (M_{PRpre} ∗ C_{PR} + M_{PWpre} ∗ C_{PW} )/C$$</p>
+<p>C: 平均开销</p>
+<p>$$(M_{PRpre} ∗ C_{PR} + M_{PWpre} ∗ C_{PW} )$$: PCM数据遗漏开销</p>
+<p>DARP算法基于PF，定义PF0=0.3, PF1=0.6.，PF值越小，缓存性能对PCM访问成本越不敏感，PF值越大，对PCM访问成本越敏感。因此，如果PF值很小，DRAM数据的插入/提升位置可以在MRU附近，否则，DRAM数据的插入/提升位置必须在LRU附近。</p>
+<p>因此，对PCM数据适用LRU，对DRAM数据适用DARP。</p>
+<p><strong>DARP algorithm</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="number">0</span> &lt; P <span class="keyword">and</span> F &lt; PF0:</span><br><span class="line">	T = <span class="number">6</span> ∗ N/<span class="number">16</span></span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> PF0 &lt;= PF &lt; PF1:</span><br><span class="line">	T = <span class="number">10</span> ∗ N/<span class="number">16</span></span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> PF1 &lt;= PF &lt;= <span class="number">1</span>:</span><br><span class="line">	T = <span class="number">13</span> ∗ N/<span class="number">16</span></span><br><span class="line"><span class="keyword">return</span> T</span><br></pre></td></tr></table></figure>
+<h4 id="IV-实验装置"><a href="#IV-实验装置" class="headerlink" title="IV.实验装置"></a>IV.实验装置</h4><h4 id="V-结果和分析"><a href="#V-结果和分析" class="headerlink" title="V.结果和分析"></a>V.结果和分析</h4><p>验证部分略过。</p>
+<h4 id="VI-相关工作"><a href="#VI-相关工作" class="headerlink" title="VI.相关工作"></a>VI.相关工作</h4><p>关于最后一级缓存管理机制的研究很多，可以分为两类:<strong>替换策略和分区机制</strong>。</p>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2018/10/29/混合存储系统中基于遗漏感知的LRU缓存替换策略/"></a><a class="next" href="/2018/10/29/使用自适应的多级独占缓存策略高效的缓存资源聚合/"></a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/BT/" style="font-size: 15px;">BT</a> <a href="/tags/ThinkPHP/" style="font-size: 15px;">ThinkPHP</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/vue/" style="font-size: 15px;">vue</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/spider/" style="font-size: 15px;">spider</a> <a href="/tags/sql/" style="font-size: 15px;">sql</a> <a href="/tags/hbase/" style="font-size: 15px;">hbase</a> <a href="/tags/文献推荐/" style="font-size: 15px;">文献推荐</a> <a href="/tags/common/" style="font-size: 15px;">common</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/基于雾计算的混合内存下的共享末级缓存成本感知缓存替换策略/">基于雾计算的混合内存下的共享末级缓存成本感知缓存替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/混合存储系统中基于遗漏感知的LRU缓存替换策略/">混合存储系统中基于遗漏感知的LRU缓存替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略/">大数据存储DRAM／PCM混合存储器共享级缓存中的动态自适应替换策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/使用自适应的多级独占缓存策略高效的缓存资源聚合/">使用自适应的多级独占缓存策略高效的缓存资源聚合</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/29/提炼交换_一个高效的混合DRAM-NVM系统的交换机制/">提炼交换_一个高效的混合DRAM-NVM系统的交换机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/05/ThinkPhp埋坑指南/">ThinkPhp埋坑指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/04/linux登录后出现-bash-4-1-，解决办法以及造成这样的原因/">linux登录后出现-bash-4.1$，解决办法以及造成这样的原因</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/08/17/py-Hbase/">py-Hbase</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/08/15/BT/">BT</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/07/18/Git/">Git</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">Yaoyinnan's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
